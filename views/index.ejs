@@ -5,10 +5,9 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"/>
     <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
 
-    <script
-        src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js">
-    </script>
   </head>
   <body>
     <h1><%= title %></h1>
@@ -94,7 +93,7 @@
 
     	var timeopacity = d3.scale.linear()
     		.domain([0, 80])
-    		.range([0, 1])
+    		.range([0.5, 1])
 
     	var size = d3.scale.linear()
     		.domain([9500,82794])
@@ -103,7 +102,11 @@
 
 		 L.geoJson(tramos,{
 			    style: function (feature) {
-			    		return {color: freqcolor(feature.properties.f6), opacity: freqopacity(feature.properties.f6) };			        
+			    		return {
+			    			color: freqcolor(feature.properties.f6),
+			    			opacity: freqopacity(feature.properties.f6),
+			    			className: 'tramo ' + feature.properties.f2
+			    			};			        
 			    }
 			}
 		 	).addTo(map);
@@ -138,7 +141,10 @@
     		onEachFeature: function (feature, layer) {
         		layer.bindPopup(feature.properties.f1);
     		}
-    	}).addTo(map);
+    	}).addTo(map).on('click', function(e){
+    		$('.tramo').hide();
+    		$('.'+e.layer.feature.properties.f1).show();
+    	});
 
 		
 		
