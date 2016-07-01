@@ -17,74 +17,45 @@
 		var buenosAires = [-34.609851, -58.423326]
         var map = L.map('map').setView(buenosAires, 12);
 
-
-        var CartoDB_Positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-			subdomains: 'abcd',
-			maxZoom: 19
-		});
+		estaciones = <%-JSON.stringify(estaciones)%>;
+		tramos = <%-JSON.stringify(tramos)%>;
 
 
-		// https: also suppported.
-		var Thunderforest_Pioneer = L.tileLayer('http://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-		});
+
+  //       var CartoDB_Positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+		// 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+		// 	subdomains: 'abcd',
+		// 	maxZoom: 19
+		// });
 
 
-		var Stamen_Watercolor = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
-			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-			subdomains: 'abcd',
-			minZoom: 1,
-			maxZoom: 16,
-			ext: 'png'
-		});
+		// // https: also suppported.
+		// // var Thunderforest_Pioneer = L.tileLayer('http://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}.png', {
+		// // 	attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		// // });
+
+
+		// // var Stamen_Watercolor = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+		// // 	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+		// // 	subdomains: 'abcd',
+		// // 	minZoom: 1,
+		// // 	maxZoom: 16,
+		// // 	ext: 'png'
+		// // });
 
 		var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
 			attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 		});
 
         Hydda_Full.addTo(map);
-        // mapLink = 
-        //     '<a href="http://openstreetmap.org">OpenStreetMap</a>';
-        // L.tileLayer(
-        //     'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //     attribution: '&copy; ' + mapLink + ' Contributors',
-        //     maxZoom: 18,
-        //     }).addTo(map);
-				
-		/* Initialize the SVG layer */
-		// map._initPathRoot()    
-		// var svg = d3.select(map.getPanes().overlayPane).append("svg");
-		// var g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
+		var freqcolor = d3.scale.linear()
+    		.domain([0, 10000])
+    		.range(["white", "green"]);
 
-		// collection = <%-JSON.stringify(ciclovias)%>;
-
-		// estaciones = <%-JSON.stringify(estaciones)%>;
-
-		// tramos = <%-JSON.stringify(tramos)%>;
-		
-
-		//  L.geoJson(collection,{
-		// 	    style: function (feature) {
-		// 	    	if(feature.properties.BICISENDA=== 'Ciclovas'){
-		// 	    		return {color: 'gray', opacity:0.5};
-		// 	    	}else{
-		// 	    		return {color: 'black', opacity: 0};
-		// 	    	}
-			        
-		// 	    }
-		// 	}
-		//  	).addTo(map);
-
-
-		// var freqcolor = d3.scale.linear()
-  //   		.domain([0, 10000])
-  //   		.range(["white", "green"]);
-
-  //   	var freqopacity = d3.scale.linear()
-  //   		.domain([0, 10000])
-  //   		.range([0, 1]);
+    	var freqopacity = d3.scale.linear()
+    		.domain([0, 10000])
+    		.range([0, 1]);
 
 
   //   	var timecolor = d3.scale.linear()
@@ -95,57 +66,51 @@
   //   		.domain([0, 80])
   //   		.range([0.5, 1])
 
-  //   	var size = d3.scale.linear()
-  //   		.domain([9500,82794])
-  //   		.range([10, 30])
+    	var size = d3.scale.linear()
+    		.domain([9500,82794])
+    		.range([10, 30])
 
 
-		//  L.geoJson(tramos,{
-		// 	    style: function (feature) {
-		// 	    		return {
-		// 	    			color: freqcolor(feature.properties.f6),
-		// 	    			opacity: freqopacity(feature.properties.f6),
-		// 	    			className: 'tramo ' + feature.properties.f2
-		// 	    			};			        
-		// 	    }
-		// 	}
-		//  	).addTo(map);
+		 L.geoJson(tramos,{
+			    style: function (feature) {
+			    		return {
+			    			color: freqcolor(feature.properties.f6),
+			    			opacity: freqopacity(feature.properties.f6),
+			    			className: 'tramo estacion' + feature.properties.f1
+			    			};			        
+			    }
+			}
+		 	).addTo(map);
 
 
-		//  // L.geoJson(tramos,{
-		// 	//     style: function (feature) {
-		// 	//     		return {color: timecolor(feature.properties.f5), opacity: timeopacity(feature.properties.f5) };			        
-		// 	//     }
-		// 	// }
-		//  // 	).addTo(map);
-
-
-		// var emarker = L.icon({
+  // 		var emarker = L.icon({
 		//     iconUrl: '/images/marker.png',
 		//     iconSize:     [20,20], // size of the icon
 		//     iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
 		//     popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
 		// });
 
+  		// L.geoJson(estaciones,{
+    // 		pointToLayer: function (feature, latlng) {
+    //         	return L.marker(latlng, {icon: emarker });
+    //     	}
+    // 	}).addTo(map)
 
-		// L.geoJson(estaciones,{
-  //   		pointToLayer: function (feature, latlng) {
-  //           	return L.marker(latlng, {icon: L.icon({
-		// 					    iconUrl: '/images/marker.png',
-		// 					    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
-		// 					    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-		// 					    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
-		// 					})
-		//  				});
-  //       	},
-  //   		onEachFeature: function (feature, layer) {
-  //       		layer.bindPopup(feature.properties.f1);
-  //   		}
-  //   	}).addTo(map).on('click', function(e){
-  //   		$('.tramo').hide();
-  //   		$('.'+e.layer.feature.properties.f1).show();
-  //   	});
 
+    	L.geoJson(estaciones,{
+    		pointToLayer: function (feature, latlng) {
+            	return L.marker(latlng, {icon: L.icon({
+							    iconUrl: '/images/marker.png',
+							    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
+							    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+							    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+							})
+		 				});
+        	}
+    	}).addTo(map).on('click', function(e){
+    		$('.tramo').hide();
+    		$('.estacion'+e.layer.feature.properties.f2).show().attr('stroke-opacity',1);
+    	});
 		
 		
 	</script>
