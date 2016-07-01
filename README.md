@@ -3,9 +3,9 @@
 
 La idea es aprender a usar datos geolocalizados, y usando librerías de javascript poder dibujar mapas interactivos.
 
-Vamos a hacer un mapa visualización los datos del uso del sistema de transporte público de bicicletas de la Ciudad de Buenos Aires, provistos por [Buenos Aires Data](http://data.buenosaires.gob.ar/).
+Vamos a hacer un mapa para visualizar los datos del uso del sistema de transporte público de bicicletas de la Ciudad de Buenos Aires, provistos por [Buenos Aires Data](http://data.buenosaires.gob.ar/).
 
-Para hacerlo vamos a utilizar las librerías de javascript (leaflet)[http://leafletjs.com/] y un poco de [d3.js](https://d3js.org/).
+Para hacerlo vamos a utilizar las librerías de javascript [leaflet](http://leafletjs.com/) y un poco de [d3.js](https://d3js.org/).
 
 Como servidor web usaremos [express](http://expressjs.com/).
 
@@ -43,25 +43,26 @@ Vamos a utilizar los siguentes datasets de [Buenos Aires Data](http://data.bueno
 
 Para poder trabajar de forma más adecuada con las librerías javascript, los datos fueron transformados a [GeoJson](http://geojson.org/) usando [postGis](http://postgis.net/).
 
-Para eso se hizo un trabajo previo en los datos que vamos a explicar en un post aparte por la complejidad que se merece.
+Para eso se hizo un trabajo previo en los datos que vamos a explicar en un post aparte por la complejidad que tiene.
 
-En este paso también agregamos los datos de recorridos entre todas las estaciones a lo que llamamos 'tramos'. Cada tramo es una línea recta entre dos estaciones, y tiene asociada la cantidad de veces que se registro un viaje en ese tramo, y el tiempo promedio en hacer ese tramo.
+En ese trabajo con los datos también agregamos los datos de recorridos entre todas las estaciones a lo que llamamos 'tramos'. Cada tramo es una línea recta entre dos estaciones, y tiene asociada la cantidad de veces que se registro un viaje en ese tramo, y el tiempo promedio en hacer ese tramo.
 Esto lo podemos ver en el archivo `tramos.geojson` dentro de la carpeta `data`.
 Las features de tramos son:
 
-f1: ID estacion origen.
-f2: Nombre estacion origen.
-f3: ID estacion destino.
-f4: Nombre estacion destino.
-f5: Tiempo promedio (en minutos).
-f6: Cantidad de viajes del tramo.
+* f1: ID estacion origen.
+* f2: Nombre estacion origen.
+* f3: ID estacion destino.
+* f4: Nombre estacion destino.
+* f5: Tiempo promedio (en minutos).
+* f6: Cantidad de viajes del tramo.
 
 Los datos de las estaciones están en el archivo `estaciones.geojson`, también dentro de `data`.
 
 Sus features son:
-f1: Nombre de la Estación
-f2: ID
-f3: Cantidad de usos (Como origen o destino).
+
+* f1: Nombre de la Estación
+* f2: ID
+* f3: Cantidad de usos (Como origen o destino).
 
 
 Con estos datos vamos a intentar representar en el mapa:
@@ -79,24 +80,24 @@ Vamos a trabajar sobre el archivo `index.ejs` en la carpeta `views`.
 Para esto vamos a hacer uso de leaflet, por lo que debemos importar la librería, que cuenta con un archivo js y una hoja de estilos CSS. De paso también agregamos d3.js y jQuery.
 
 ```html
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"/>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"/>
 
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
-    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
 ```
 
 Ahora en el HTML agregamos las tags de base donde queremos que leaflet nos dibuje el mapa, en este caso le puse un ancho y alto definido:
 
 ```html
-	<h1>Mapa EcoBici - DataScienceAr.io</h1>
-    <div id="map" style="width: 800px; height: 600px"></div>
+<h1>Mapa EcoBici - DataScienceAr.io</h1>
+<div id="map" style="width: 800px; height: 600px"></div>
 ```
 
 Bien, ahora vamos a escribir el javascript para dibujar el mapa de base.
 En la variable buenosAires guardamos las coordenadas de un punto central de la ciudad, que es donde va poner el centro el mapa cuando se dibuje.
 
-Creamos el mapa y en la función setView pasamos por parámetro las coordenadas donde queremos que se centre el mapa y el nivel de zoom al iniciar, por prueba y error elegí el valor 12.
+Creamos el mapa, pasandole como parámetro el id del div donde queremos que se dibuje ('map'). En la función setView pasamos por parámetro las coordenadas donde queremos que se centre el mapa y el nivel de zoom al iniciar, por prueba y error elegí el valor 12.
 
 Leaflet te permite cambiar el mapa de base elegiendo entre varios providers, para este mapa usé el provider Hydda Full, podés ver más providers y ver el código para cambiarlos [acá](https://leaflet-extras.github.io/leaflet-providers/preview/).
 
@@ -115,16 +116,23 @@ Leaflet te permite cambiar el mapa de base elegiendo entre varios providers, par
 
 En este punto, si vamos a ```http://localhost:3000``` deberíamos ver el título de la página y el mapa:
 
+```
+//No se olviden de arrancar el servidor:
+
+npm start
+
+```
+
 ![Mapa](https://github.com/atralice/biciViz/blob/master/public/images/guia/mapa.png)
 
 Bien, ahora vamos a dibujar las estaciones:
 
 Primero queremos leer los datos de los archivos GeoJson y pasarlos al front-end como objetos, para eso vamos al archivo `./routes/index.js`. Acá está el código que se ejecuta en el servidor cuando entramos a la página.
 
-Básicamente lo único que va a hacer esta parte es leer los archivos geoJson y pasarlos al front-end. Leemos el archivo con la función readFileSync, parseamos el archivo para transformarlo en un objeto Javascript con JSON.parse y eso lo guardamos en una variable.
+Básicamente lo único que va a hacer esta parte es leer los archivos geoJson y pasarlos al front-end. Leemos el archivo con la función `readFileSync`, parseamos el archivo para transformarlo en un objeto Javascript con JSON.parse y eso lo guardamos en una variable.
 En este paso ya vamos a leer las estaciones y los tramos.
 
-La siguiente linea de código renderiza la página index (donde habiamos escrito el código html del mapa) y le pasa los objetos estaciones y tramos.
+La siguiente linea de código renderiza la página `index.ejs` (donde habiamos escrito el código html del mapa) y le pasa los objetos estaciones y tramos.
 
 ```javascript
 
@@ -141,8 +149,6 @@ router.get('/', function(req, res, next) {
 Para recibir los datos en el front-end vamos a agregar lo siguiente a `index.ejs`
 
 ```javascript
-	var buenosAires = [-34.609851, -58.423326]
-	var map = L.map('map').setView(buenosAires, 12);
 
 	estaciones = <%-JSON.stringify(estaciones)%>;
 	tramos = <%-JSON.stringify(tramos)%>;
@@ -150,6 +156,8 @@ Para recibir los datos en el front-end vamos a agregar lo siguiente a `index.ejs
 ```
 
 Bien, ahora ya tenemos los datos en el front-end.
+
+## Agregando Capas al mapa
 
 Ahora vamos a agregar una capa al mapa que tenga un marcador por cada estacion de bicis.
 Para eso, elegimos una imagen que guardamos en `./public/images/marker.png`, que utilizaremos para marcar el punto está cada estación.
@@ -172,11 +180,11 @@ Ahora vamos a agregar cada estación al mapa, con el marcador que creamos recié
 Finalmente queremos agregar esa layer al mapa que teniamos, y lo hacemos con `.addTo(map)`.
 
 ```javascript
-		L.geoJson(estaciones,{
-    		pointToLayer: function (feature, latlng) {
-            	return L.marker(latlng, {icon: emarker });
-        	}
-    	}).addTo(map)
+	L.geoJson(estaciones,{
+		pointToLayer: function (feature, latlng) {
+        	return L.marker(latlng, {icon: emarker });
+    	}
+	}).addTo(map)
 
 ```
 
@@ -208,16 +216,16 @@ Entonces incluyendo esto dentro de cada icono, en la propiedad `iconSize`, vamos
 
 ```javascript
 	L.geoJson(estaciones,{
-    		pointToLayer: function (feature, latlng) {
-            	return L.marker(latlng, {icon: L.icon({
-							    iconUrl: '/images/marker.png',
-							    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
-							    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-							    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
-							})
-		 				});
-        	}
-    	}).addTo(map);
+		pointToLayer: function (feature, latlng) {
+        	return L.marker(latlng, {icon: L.icon({
+						    iconUrl: '/images/marker.png',
+						    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
+						    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+						    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+						})
+	 				});
+    	}
+	}).addTo(map);
 ```
 
 Ahora si abrimos el mapa vamos a ver cada estación con su tamaño según el uso. Fácilmente distinguimos que Retiro es la estación más usada!
@@ -279,20 +287,20 @@ En el objeto de estaciones el id estaba en `feature.f2`, entonces buscamos dentr
 
 ```javascript
 	L.geoJson(estaciones,{
-    		pointToLayer: function (feature, latlng) {
-            	return L.marker(latlng, {icon: L.icon({
-							    iconUrl: '/images/marker.png',
-							    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
-							    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-							    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
-							})
-		 				});
-        	}
-    	}).addTo(map).on('click', function(e){
-    		$('.tramo').hide();
-    		$('.estacion'+e.layer.feature.properties.f2).show().attr('stroke-opacity',1);
-    		
-    	});
+		pointToLayer: function (feature, latlng) {
+        	return L.marker(latlng, {icon: L.icon({
+						    iconUrl: '/images/marker.png',
+						    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
+						    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+						    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+						})
+	 				});
+    	}
+	}).addTo(map).on('click', function(e){
+		$('.tramo').hide();
+		$('.estacion'+e.layer.feature.properties.f2).show().attr('stroke-opacity',1);
+		
+	});
 
 ```
 Ahora, cada vez que hagamos click en una estación, vamos a poder bien sus tramos hacia las otras.
