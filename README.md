@@ -308,5 +308,6 @@ En este punto notamos que hay una diferencia entre los puntos de las estaciones 
 
 ![Mapa](https://github.com/atralice/biciViz/blob/master/public/images/guia/mapaClick.png)
 
-Cualquier duda me escriben a: toni@plataforma5.la
 Espero que les sirva.
+
+Cualquier duda me escriben a: toni@plataforma5.la
