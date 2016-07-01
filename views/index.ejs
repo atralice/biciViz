@@ -10,7 +10,7 @@
 
   </head>
   <body>
-    <h1><%= title %></h1>
+    <h1>Mapa EcoBici - DataScienceAr.io</h1>
     <div id="map" style="width: 800px; height: 600px"></div>
 
 	<script type="text/javascript">
@@ -53,98 +53,98 @@
         //     }).addTo(map);
 				
 		/* Initialize the SVG layer */
-		map._initPathRoot()    
-		var svg = d3.select(map.getPanes().overlayPane).append("svg");
-		var g = svg.append("g").attr("class", "leaflet-zoom-hide");
+		// map._initPathRoot()    
+		// var svg = d3.select(map.getPanes().overlayPane).append("svg");
+		// var g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 
-		collection = <%-JSON.stringify(ciclovias)%>;
+		// collection = <%-JSON.stringify(ciclovias)%>;
 
-		estaciones = <%-JSON.stringify(estaciones)%>;
+		// estaciones = <%-JSON.stringify(estaciones)%>;
 
-		tramos = <%-JSON.stringify(tramos)%>;
+		// tramos = <%-JSON.stringify(tramos)%>;
 		
 
-		 L.geoJson(collection,{
-			    style: function (feature) {
-			    	if(feature.properties.BICISENDA=== 'Ciclovas'){
-			    		return {color: 'gray', opacity:0.5};
-			    	}else{
-			    		return {color: 'black', opacity: 0};
-			    	}
+		//  L.geoJson(collection,{
+		// 	    style: function (feature) {
+		// 	    	if(feature.properties.BICISENDA=== 'Ciclovas'){
+		// 	    		return {color: 'gray', opacity:0.5};
+		// 	    	}else{
+		// 	    		return {color: 'black', opacity: 0};
+		// 	    	}
 			        
-			    }
-			}
-		 	).addTo(map);
+		// 	    }
+		// 	}
+		//  	).addTo(map);
 
 
-		var freqcolor = d3.scale.linear()
-    		.domain([0, 10000])
-    		.range(["white", "green"]);
+		// var freqcolor = d3.scale.linear()
+  //   		.domain([0, 10000])
+  //   		.range(["white", "green"]);
 
-    	var freqopacity = d3.scale.linear()
-    		.domain([0, 10000])
-    		.range([0, 1]);
-
-
-    	var timecolor = d3.scale.linear()
-    		.domain([0, 80])
-    		.range(["gold", "white"]);
-
-    	var timeopacity = d3.scale.linear()
-    		.domain([0, 80])
-    		.range([0.5, 1])
-
-    	var size = d3.scale.linear()
-    		.domain([9500,82794])
-    		.range([10, 30])
+  //   	var freqopacity = d3.scale.linear()
+  //   		.domain([0, 10000])
+  //   		.range([0, 1]);
 
 
-		 L.geoJson(tramos,{
-			    style: function (feature) {
-			    		return {
-			    			color: freqcolor(feature.properties.f6),
-			    			opacity: freqopacity(feature.properties.f6),
-			    			className: 'tramo ' + feature.properties.f2
-			    			};			        
-			    }
-			}
-		 	).addTo(map);
+  //   	var timecolor = d3.scale.linear()
+  //   		.domain([0, 80])
+  //   		.range(["gold", "white"]);
+
+  //   	var timeopacity = d3.scale.linear()
+  //   		.domain([0, 80])
+  //   		.range([0.5, 1])
+
+  //   	var size = d3.scale.linear()
+  //   		.domain([9500,82794])
+  //   		.range([10, 30])
 
 
-		 // L.geoJson(tramos,{
-			//     style: function (feature) {
-			//     		return {color: timecolor(feature.properties.f5), opacity: timeopacity(feature.properties.f5) };			        
-			//     }
-			// }
-		 // 	).addTo(map);
+		//  L.geoJson(tramos,{
+		// 	    style: function (feature) {
+		// 	    		return {
+		// 	    			color: freqcolor(feature.properties.f6),
+		// 	    			opacity: freqopacity(feature.properties.f6),
+		// 	    			className: 'tramo ' + feature.properties.f2
+		// 	    			};			        
+		// 	    }
+		// 	}
+		//  	).addTo(map);
 
 
-		var emarker = L.icon({
-		    iconUrl: '/images/marker.png',
-		    iconSize:     [20,20], // size of the icon
-		    iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
-		    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
-		});
+		//  // L.geoJson(tramos,{
+		// 	//     style: function (feature) {
+		// 	//     		return {color: timecolor(feature.properties.f5), opacity: timeopacity(feature.properties.f5) };			        
+		// 	//     }
+		// 	// }
+		//  // 	).addTo(map);
 
 
-		L.geoJson(estaciones,{
-    		pointToLayer: function (feature, latlng) {
-            	return L.marker(latlng, {icon: L.icon({
-							    iconUrl: '/images/marker.png',
-							    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
-							    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-							    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
-							})
-		 				});
-        	},
-    		onEachFeature: function (feature, layer) {
-        		layer.bindPopup(feature.properties.f1);
-    		}
-    	}).addTo(map).on('click', function(e){
-    		$('.tramo').hide();
-    		$('.'+e.layer.feature.properties.f1).show();
-    	});
+		// var emarker = L.icon({
+		//     iconUrl: '/images/marker.png',
+		//     iconSize:     [20,20], // size of the icon
+		//     iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+		//     popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+		// });
+
+
+		// L.geoJson(estaciones,{
+  //   		pointToLayer: function (feature, latlng) {
+  //           	return L.marker(latlng, {icon: L.icon({
+		// 					    iconUrl: '/images/marker.png',
+		// 					    iconSize:     [size(feature.properties.f3),size(feature.properties.f3)], // size of the icon
+		// 					    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+		// 					    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+		// 					})
+		//  				});
+  //       	},
+  //   		onEachFeature: function (feature, layer) {
+  //       		layer.bindPopup(feature.properties.f1);
+  //   		}
+  //   	}).addTo(map).on('click', function(e){
+  //   		$('.tramo').hide();
+  //   		$('.'+e.layer.feature.properties.f1).show();
+  //   	});
 
 		
 		
